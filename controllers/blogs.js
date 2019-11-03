@@ -1,16 +1,24 @@
-const app = require('../app');
+const blogsRouter = require('express').Router();
+const Blog = require('../models/blogs');
 const config = require('../utils/config');
 
-app.get('/', (req, res) => {
+blogsRouter.get('/', (req, res) => {
     Blog
         .find({})
         .then(blogs => {
-            res.json(blogs)
+            res.json(blogs.map(blog => blog.toJSON()))
         })
 })
 
-app.post('/', (req, res) => {
-    const blog = new Blog(req.body)
+blogsRouter.post('/', (req, res) => {
+    const body = req.body;
+
+    const blog = new Blog({
+        author: body.author,
+        title: body.title,
+        url: body.url,
+        likes: body.likes
+    })
 
     blog
         .save()
@@ -19,7 +27,4 @@ app.post('/', (req, res) => {
         })
 })
 
-const PORT = config.MONGO_URI || 3001
-app.listen(PORT, () => {
-    console.log(`Server running on port ${ PORT }`)
-})
+module.exports = blogsRouter;
