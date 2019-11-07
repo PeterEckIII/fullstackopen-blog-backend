@@ -73,6 +73,18 @@ describe('Blog API', () => {
         const likesOnAddedPost = blogs[blogs.length - 1].likes
         expect(likesOnAddedPost).toBe(0);
     })
+
+    test('if no title or URL properties provided it returns a 400 error', async () => {
+        const newPost = {
+            author: "Peter Eck",
+            likes: 25
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(newPost)
+            .expect(400)
+    })
 })
 
 afterAll(() => {
