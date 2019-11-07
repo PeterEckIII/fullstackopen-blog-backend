@@ -43,7 +43,7 @@ describe('Blog API', () => {
         await api
             .post('/api/blogs')
             .send(newPost)
-            .expect(201)
+            .expect(200)
             .expect('Content-Type', /application\/json/)
 
         const blogsAtEnd = await helper.blogsInDb()
@@ -54,6 +54,24 @@ describe('Blog API', () => {
 
         const author = blogsAtEnd.map(blog => blog.author)
         expect(author).toContain('Johnny Appleseed');
+    })
+
+    test('if likes are not included in a post then the property is set to zero', async () => {
+        const newPost = {
+            title: 'Using Enzyme in your React application',
+            author: 'Chris Sevillijas',
+            url: 'www.scotch.io',
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(newPost)
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+        const blogs = await helper.blogsInDb();
+        const likesOnAddedPost = blogs[blogs.length - 1].likes
+        expect(likesOnAddedPost).toBe(0);
     })
 })
 
