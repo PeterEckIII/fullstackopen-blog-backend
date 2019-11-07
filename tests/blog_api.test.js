@@ -25,6 +25,36 @@ describe('Blog API', () => {
         const res = await api.get('/api/blogs')
         expect(res.body.length).toEqual(helper.initialPosts.length)
     })
+
+    test('contains an identifier property called id', async () => {
+        const blogs = await helper.blogsInDb();
+        const id = blogs[0].id;
+        expect(id).toBeDefined();
+    })
+
+    test('a valid post can be added', async () => {
+        const newPost = {
+            title: 'Jest is a great testing framework',
+            author: 'Johnny Appleseed',
+            url: 'https://www.medium.com/topics/javascript',
+            likes: 7
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(newPost)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
+        const blogsAtEnd = await helper.blogsInDb()
+        expect(blogsAtEnd.length).toBe(helper.initialPosts.length + 1)
+
+        const title = blogsAtEnd.map(blog => blog.title)
+        expect(title).toContain('Jest is a great testing framework')
+
+        const author = blogsAtEnd.map(blog => blog.author)
+        expect(author).toContain('Johnny Appleseed');
+    })
 })
 
 afterAll(() => {
