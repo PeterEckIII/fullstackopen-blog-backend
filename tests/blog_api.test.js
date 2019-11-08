@@ -13,7 +13,7 @@ beforeEach(async () => {
     await Promise.all(promiseArray);
 })
 
-describe('Blog API', () => {
+describe('Fetching blog posts', () => {
     test('returns content in JSON format', async () => {
         await api
             .get('/api/blogs')
@@ -31,7 +31,9 @@ describe('Blog API', () => {
         const id = blogs[0].id;
         expect(id).toBeDefined();
     })
+})
 
+describe('Adding blog posts', () => {
     test('a valid post can be added', async () => {
         const newPost = {
             title: 'Jest is a great testing framework',
@@ -84,6 +86,24 @@ describe('Blog API', () => {
             .post('/api/blogs')
             .send(newPost)
             .expect(400)
+    })
+})
+
+describe('Deleting blog posts', () => {
+    test("A post can be deleted", async () => {
+        const blogsAtStart = await helper.blogsInDb();
+        console.log(`Blogs at start of test: ${blogsAtStart}`)
+        const blogToDelete = blogsAtStart[0];
+
+        await api
+            .delete(`/api/blogs/${blogToDelete.id}`)
+            .expect(200)
+
+        const blogsAtEnd = await helper.blogsInDb()
+        expect(blogsAtEnd.length).toBe(helper.initialPosts.length - 1)
+
+        const contents = blogsAtEnd.map(blog => blog.content);
+        expect(contents).not.toContain(blogToDelete)
     })
 })
 
