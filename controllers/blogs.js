@@ -38,4 +38,23 @@ blogsRouter.delete('/:id', async (req, res, next) => {
     }
 })
 
+blogsRouter.put('/:id', async (req, res, next) => {
+    const body = req.body;
+
+    const post = {
+        author: body.author,
+        title: body.title,
+        url: body.url,
+        likes: body.likes
+    }
+
+    const newPost = new Blog(post);
+
+    try {
+        
+    } catch (error) {
+        next(error)
+    }
+})
+
 module.exports = blogsRouter;
